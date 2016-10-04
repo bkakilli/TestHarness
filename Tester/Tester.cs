@@ -10,14 +10,21 @@ using System.Threading.Tasks;
 namespace TestHarness
 
 {
-    public class Tester : MarshalByRefObject
+    public class Tester : MarshalByRefObject, ILog
     {
         // public string testerName = "No Name";
         // public string SayHello()
         // => "Hello from Tester " + AppDomain.CurrentDomain.FriendlyName;
 
+        public Logger logger;
+
         ObjectHandle objHandle;
         ITest driver;
+        
+        public void initLogger(string testID)
+        {
+            logger = new Logger("Tester " + testID);
+        }
 
         public bool LoadLibraries(string path)
         {
@@ -127,10 +134,14 @@ namespace TestHarness
             Console.WriteLine("\n");
         }
 
-        public void testLoader(int a)
+        public void Log(string log)
         {
-            Console.WriteLine("Loader access test: {0}", a * 2);
+
         }
 
+        public string getLog()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

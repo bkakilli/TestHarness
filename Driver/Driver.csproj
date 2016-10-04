@@ -57,9 +57,9 @@
       <Project>{11bb6495-18f8-4c3e-b47e-7b4059e993c2}</Project>
       <Name>SourceCode</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestInterface\TestInterface.csproj">
+    <ProjectReference Include="..\TestInterface\ITest.csproj">
       <Project>{f437a047-f69c-4da2-9da4-75cdaafa92a4}</Project>
-      <Name>TestInterface</Name>
+      <Name>ITest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

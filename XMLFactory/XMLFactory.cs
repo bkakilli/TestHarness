@@ -38,14 +38,17 @@ namespace TestHarness
         }
     }
 
-    public class XMLFactory
+    public class XMLFactory : ILog
     {
-        private XDocument doc_;
-        private List<Test> testList_;
+        Logger logger;
+
+        XDocument doc_;
+        List<Test> testList_;
         public XMLFactory()
         {
             doc_ = new XDocument();
             testList_ = new List<Test>();
+            logger = new Logger("XMLFactory");
         }
         public bool parse(System.IO.Stream xml)
         {
@@ -99,8 +102,18 @@ namespace TestHarness
         {
             return testList_;
         }
-        
-        #if(CONSTR_TEST)
+
+        public void Log(string log)
+        {
+            logger.Log(log);
+        }
+
+        public string getLog()
+        {
+            return logger.getLog();
+        }
+
+#if (CONSTR_TEST)
         static void Main(string[] args)
         {
             XMLFactory demo = new XMLFactory();
@@ -119,7 +132,7 @@ namespace TestHarness
                 Console.Write("\n\n  {0}", ex.Message);
             }
         }
-        #endif
-        
+#endif
+
     }
 }

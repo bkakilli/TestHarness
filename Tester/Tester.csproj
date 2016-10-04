@@ -44,9 +44,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestInterface\TestInterface.csproj">
+    <ProjectReference Include="..\Logger\Logger.csproj">
+      <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
+      <Name>Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestInterface\ITest.csproj">
       <Project>{f437a047-f69c-4da2-9da4-75cdaafa92a4}</Project>
-      <Name>TestInterface</Name>
+      <Name>ITest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

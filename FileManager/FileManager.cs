@@ -31,8 +31,9 @@ namespace TestHarness
 
     // File Manager always gets paths for the target DLLs relative to the repository folder.
     // It works in the path that application runs.
-    public class FileManager<TypeTestID> : IRepository
+    public class FileManager<TypeTestID> : IRepository, ILog
     {
+        public Logger logger;
 
         string appLocation;
         string testFolder;
@@ -45,6 +46,8 @@ namespace TestHarness
             appLocation = appLocation_;
             testFolder = testFolder_;
             folders = new Dictionary<TypeTestID, TempFolder<TypeTestID>>();
+
+            logger = new Logger("FileManager");
         }
 
         public bool createTempFolder(TypeTestID testID, List<string> fileList)
@@ -173,9 +176,27 @@ namespace TestHarness
             return Path.GetFullPath(Path.Combine(appLocation, relPath));
         }
 
-        public void main(string[] args)
+        public void writeToFile(string filePath, string text)
         {
+            try
+            {
+                File.WriteAllText(filePath, text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not write to the file:\n\t{0}.\n\tDetails: {1}", filePath, ex.Message);
+            }
+            
+        }
 
+        public void Log(string log)
+        {
+            logger.Log(log);
+        }
+
+        public string getLog()
+        {
+            return logger.getLog();
         }
     }
 }

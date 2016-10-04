@@ -9,9 +9,10 @@ using System.Reflection;
 using System.Runtime.Remoting;
 using System.IO;
 
+
 namespace TestHarness
 {
-    class TestCore
+    class TestCore : ILog
     {
         static bool verbose = false;
 
@@ -23,8 +24,9 @@ namespace TestHarness
         string repoPath;
         FileManager<string> fm;
         BlockingQueue<string> queue;
-        ThreadStart childref;
         public Thread coreThread;
+
+        Logger logger;
 
         public TestCore(string repoPath_, string testFolder_)
         {
@@ -36,9 +38,8 @@ namespace TestHarness
             fm.connectToRepo(repoPath);
             
             queue = new BlockingQueue<string>();
-
-            childref = new ThreadStart(run);
-            coreThread = new Thread(childref);
+            coreThread = new Thread(new ThreadStart(run));
+            logger = new Logger("TestCore");
         }
 
         static void Main()
@@ -143,12 +144,12 @@ namespace TestHarness
             {
                 xml = new System.IO.FileStream(xmlPath, System.IO.FileMode.Open);
             }
-            catch (FileNotFoundException ex)
+            catch (FileNotFoundException)
             {
                 Console.WriteLine("XML file is not found in provided path: {0}", xmlPath);
                 return;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("XML file could not be opened.", xmlPath);
                 return;
@@ -203,6 +204,7 @@ namespace TestHarness
                 ObjectHandle oh = childDomain.CreateInstance("Tester", "TestHarness.Tester");
                 Tester tester = oh.Unwrap() as Tester;
 
+                tester.initLogger(testID);
                 // Load libraries into 
                 if (!tester.LoadLibraries(libDirectory))
                 {
@@ -227,6 +229,8 @@ namespace TestHarness
 
                 AppDomain.Unload(childDomain);
                 fm.removeTempFolder(testID);
+
+                fm.writeToFile(Path.Combine(appLocation,@"..\..\..\testfile.txt"), "Some test\ntext\n\there");
             }
 
             xml.Close();
@@ -243,6 +247,15 @@ namespace TestHarness
             Console.WriteLine("\n");
         }
 
+        public void Log(string log)
+        {
+            logger.Log(log);
+        }
+
+        public string getLog()
+        {
+            return logger.getLog();
+        }
     }
 
 }

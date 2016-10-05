@@ -44,6 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FileManager\FileManager.csproj">
+      <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
+      <Name>FileManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.csproj">
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>
@@ -51,6 +55,10 @@
     <ProjectReference Include="..\TestInterface\ITest.csproj">
       <Project>{f437a047-f69c-4da2-9da4-75cdaafa92a4}</Project>
       <Name>ITest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XMLFactory\XMLFactory.csproj">
+      <Project>{0b052889-61f7-401c-80bc-f8b79b7336b9}</Project>
+      <Name>XMLFactory</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

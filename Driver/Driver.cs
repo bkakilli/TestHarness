@@ -20,9 +20,10 @@ namespace TestHarness
             int fact2 = sourceCode.getFact();
 
             //Console.WriteLine("Factorial: " + fact1);
-            Console.WriteLine("Inside driver");
-            Thread.Sleep(5000);
+            //Console.WriteLine("Inside driver");
+            //Thread.Sleep(5000);
 
+            throw new NullReferenceException();
             return result;
         }
 

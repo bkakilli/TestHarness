@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCore", "TestCore\TestCore.csproj", "{10E3F476-C18A-40AB-91A9-35BE541EAB40}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITest", "TestInterface\ITest.csproj", "{F437A047-F69C-4DA2-9DA4-75CDAAFA92A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger", "Logger\Logger.csproj", "{321B64E5-5B7D-4BAE-AF74-A01D2EC46AF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{A066CF63-9D67-4E3F-B274-800006644748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{321B64E5-5B7D-4BAE-AF74-A01D2EC46AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{321B64E5-5B7D-4BAE-AF74-A01D2EC46AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{321B64E5-5B7D-4BAE-AF74-A01D2EC46AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A066CF63-9D67-4E3F-B274-800006644748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A066CF63-9D67-4E3F-B274-800006644748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A066CF63-9D67-4E3F-B274-800006644748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A066CF63-9D67-4E3F-B274-800006644748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

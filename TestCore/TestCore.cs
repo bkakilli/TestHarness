@@ -12,60 +12,38 @@ using System.IO;
 
 namespace TestHarness
 {
-    class TestCore : ILog
+    public class TestCore
     {
-        static bool verbose = false;
+        static string TAG = "TestCore";
 
         bool stop;
         bool running;
 
         string appLocation;
         string testFolder;
-        string repoPath;
-        FileManager<string> fm;
+        string repository;
+        string logFolder = "logs";
         BlockingQueue<string> queue;
+
         public Thread coreThread;
+        public Logger logger;
 
-        Logger logger;
-
-        public TestCore(string repoPath_, string testFolder_)
+        public TestCore(string repoPath_, Logger logger_)
         {
             appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            testFolder = testFolder_;
-            repoPath = repoPath_;
+            testFolder = @"testFolder";
+            repository = repoPath_;
 
-            fm = new FileManager<string>(appLocation, testFolder);
-            fm.connectToRepo(repoPath);
-            
+            logger = logger_;
+
             queue = new BlockingQueue<string>();
             coreThread = new Thread(new ThreadStart(run));
-            logger = new Logger("TestCore");
+ 
         }
 
-        static void Main()
+        ~TestCore()
         {
-            TestCore core = new TestCore(@"..\..\..", @"testFolder");
-            core.Start();
-            Thread.Sleep(100);
-
-            while (true)
-            {
-                Console.Write("Choose wisely: ");
-                string line = Console.ReadLine();
-                Console.WriteLine();
-                if (line == "exit")
-                {
-                    Console.WriteLine("Quiting");
-                    core.Stop();
-                    break;
-                }
-                    
-                else
-                    core.queue.enQ(line);
-            }
-
-            //core.queue.enQ(@"..\..\..\XMLFactory\TestRequest.xml");
-
+            FileManager<string>.removeFolder(Path.Combine(appLocation, testFolder));
         }
 
         public void Start()
@@ -78,32 +56,36 @@ namespace TestHarness
             //coreThread.Abort();
             stop = true;
             queue.enQ("stop command");
-            
-            if(forceStop)
+
+            logger.verbose = true;
+            if (forceStop)
             {
                 Thread.Sleep(100);
                 coreThread.Abort();
 
                 try
                 {
-                    System.IO.Directory.Delete(Path.Combine(appLocation, testFolder), true);
+                    FileManager<string>.removeFolder(Path.Combine(appLocation, testFolder)); ;
                 }
 
-                catch (System.IO.IOException e)
+                catch (System.IO.IOException ex)
                 {
-                    Console.WriteLine(e.Message);
+                    Log(TAG, string.Format("{0}\n", ex.Message));
                 }
             }
             else if (running)
             {
-                Console.WriteLine("Waiting for running tests to finish to quit.");
+                FileManager<string>.removeFolder(Path.Combine(appLocation, testFolder));
+                Log(TAG, string.Format("Waiting for running tests to finish to quit.\n"));
             }
+
+            logger.verbose = false;
 
         }
 
         private void run()
         {
-            Console.WriteLine("Core Thread starting...");
+            Console.WriteLine("Core Thread starting...\n");
             while (true)
             {
                 running = false;
@@ -115,146 +97,76 @@ namespace TestHarness
             }
         }
 
+        public void enQRequest(string testRequest)
+        {
+            queue.enQ(testRequest);
+        }
+
         private void executeRequest(string xmlFile)
         {
-            // Sample request:
-            //List<Test> tests = new List<Test>();
 
-            //Test sampleTest = new Test();
-            //sampleTest.author = "Burak_Kakillioglu";
-            //sampleTest.authorType = "developer";
-            //sampleTest.priority = "normal";
-            //sampleTest.testCode = new List<string> {@"SourceCode.dll" };
-            //sampleTest.testDriver = @"Driver.dll";
-            //sampleTest.testName = "testname";
-            //sampleTest.timeStamp = DateTime.Now;
-
-            //tests.Add(sampleTest);
-
-            //// Parse XML and create test list. For each test in test list, create a child app domain 
-            //// and load all files in the test and load libraries into that child app domain.
-
-            string domainName = "Testing Domain";
-
-            XMLFactory xf = new XMLFactory();
-
-            string xmlPath = Path.GetFullPath(Path.Combine(appLocation, xmlFile));
-            System.IO.FileStream xml;
-            try
-            {
-                xml = new System.IO.FileStream(xmlPath, System.IO.FileMode.Open);
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("XML file is not found in provided path: {0}", xmlPath);
-                return;
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("XML file could not be opened.", xmlPath);
-                return;
-            }
+            string domainName = "TestingDomain";   // A unique domain name for each test request
+            string libDirectory = Path.Combine(appLocation, testFolder, domainName);  // Create a lib folder for each test request. This folder will contain subdirectories for each test
             
+            if (!Directory.Exists(libDirectory))
+                Directory.CreateDirectory(libDirectory);
 
-            if (!xf.parse(xml))
-            {
-                Console.WriteLine("Skiping test request.");
-                return;
-            }
+            // Create application domain setup information for new AppDomain
+            AppDomainSetup domaininfo = new AppDomainSetup();
+            domaininfo.ApplicationBase = appLocation;  // defines search path for assemblies
+            domaininfo.PrivateBinPath = libDirectory;
 
-            List<Test> testList = xf.getTests();
-            foreach (Test test in testList)
-            {
-                // Create a unique ID for each test in test request.
-                string testID = String.Format("Test_{0}_{1}",
-                    test.timeStamp.ToString("yyyyMMdd_HHmmss"),
-                    (test.testName != "") ? test.testName : testList.Count.ToString());
-                
-                Console.WriteLine("\n\n--------- Testing {0} in {1}\n", testID, domainName);
+            // Create evidence for the new AppDomain from evidence of current
+            Evidence adevidence = AppDomain.CurrentDomain.Evidence;
 
-                // Create filelist to be copied from repository
-                List<string> fileList = new List<string>();
-                fileList.Add(test.testDriver);
-                foreach (string sourceCode in test.testCode)
-                    fileList.Add(sourceCode);
+            // Create Child AppDomain with provided evidence and domain info
+            AppDomain childDomain
+              = AppDomain.CreateDomain(domainName, adevidence, domaininfo);
 
-                // Create the temporary folder for current test to load the libraries from
-                if (!fm.createTempFolder(testID, fileList))
-                {
-                    Console.WriteLine("Skipping test {0}.", testID);
-                    continue;
-                }
+            // Load Tester into the testing domain
+            childDomain.Load("Tester");
+            ObjectHandle oh = childDomain.CreateInstance("Tester", "TestHarness.Tester");
+            Tester tester = oh.Unwrap() as Tester;
+            tester.setVerbose(logger.verbose);
 
-                string libDirectory = fm.getPath(testID);
+            tester.executeRequest(xmlFile, appLocation, repository, libDirectory);
 
-                // Create application domain setup information for new AppDomain
-                AppDomainSetup domaininfo = new AppDomainSetup();
-                domaininfo.ApplicationBase = appLocation;  // defines search path for assemblies
-                domaininfo.PrivateBinPath = libDirectory;
+            string logFile = Path.GetFullPath(Path.Combine(
+                appLocation, repository, logFolder, Path.GetFileNameWithoutExtension(xmlFile) + @".log"
+                ));
+            FileManager<string>.writeToFile(logFile, tester.getLog());
 
-                // Create evidence for the new AppDomain from evidence of current
-                Evidence adevidence = AppDomain.CurrentDomain.Evidence;
+            AppDomain.Unload(childDomain);
 
-                // Create Child AppDomain with provided evidence and domain info
-                AppDomain childDomain
-                  = AppDomain.CreateDomain(domainName, adevidence, domaininfo);
-
-                // Load Tester into the testing domain
-                childDomain.Load("Tester");
-                ObjectHandle oh = childDomain.CreateInstance("Tester", "TestHarness.Tester");
-                Tester tester = oh.Unwrap() as Tester;
-
-                tester.initLogger(testID);
-                // Load libraries into 
-                if (!tester.LoadLibraries(libDirectory))
-                {
-                    Console.WriteLine("Error: Could not load libraries.\n");
-                    fm.removeTempFolder(testID);
-                    continue;
-                }
-
-                if (verbose)
-                    showAssemblies(AppDomain.CurrentDomain);
-
-                // Logging here.
-
-                string driverName = Path.GetFileNameWithoutExtension(test.testDriver);
-                bool testResult;
-                if (tester.setupTest(driverName))
-                {
-                    Console.WriteLine("Testing...");
-                    testResult = tester.RunTest();
-                    Console.WriteLine("Test {0} has {1}ed", testID, testResult ? "PASS" : "FAIL");
-                }
-
-                AppDomain.Unload(childDomain);
-                fm.removeTempFolder(testID);
-
-                fm.writeToFile(Path.Combine(appLocation,@"..\..\..\testfile.txt"), "Some test\ntext\n\there");
-            }
-
-            xml.Close();
-
+            FileManager<string>.removeFolder(libDirectory);
         }
 
         private void showAssemblies(AppDomain ad)
         {
             Assembly[] arrayOfAssems = ad.GetAssemblies();
-            Console.WriteLine("\n Assembly list in the domain {0}:", ad.FriendlyName);
+            Log(TAG, string.Format("\n Assembly list in the domain {0}:\n", ad.FriendlyName));
             foreach (Assembly assem in arrayOfAssems)
-                Console.Write("\n   -{0}", assem);
+                Log(TAG, string.Format("\n   -{0}", assem));
 
-            Console.WriteLine("\n");
+            Log(TAG, string.Format("\n\n"));
         }
 
-        public void Log(string log)
+        public void setVerbose(bool v)
         {
-            logger.Log(log);
+            logger.verbose = v;
         }
 
-        public string getLog()
+        public void Log(string tag, string log)
         {
-            return logger.getLog();
+            logger.Log(tag, log);
+        }
+
+        public string getLog(string fileName)
+        {
+            string logFile = Path.GetFullPath(Path.Combine(
+                   appLocation, repository, logFolder, Path.GetFileNameWithoutExtension(fileName) + @".log"
+                   ));
+            return FileManager<string>.readFile(logFile);
         }
     }
 

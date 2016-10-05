@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{10E3F476-C18A-40AB-91A9-35BE541EAB40}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{A066CF63-9D67-4E3F-B274-800006644748}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestCore</RootNamespace>
-    <AssemblyName>TestCore</AssemblyName>
+    <RootNamespace>Client</RootNamespace>
+    <AssemblyName>Client</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,9 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,29 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockingQueue.cs" />
-    <Compile Include="TestCore.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileManager\FileManager.csproj">
-      <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
-      <Name>FileManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.csproj">
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tester\Tester.csproj">
-      <Project>{37bc6a84-d050-4c66-8be1-8cb8294de21f}</Project>
-      <Name>Tester</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\XMLFactory\XMLFactory.csproj">
-      <Project>{0b052889-61f7-401c-80bc-f8b79b7336b9}</Project>
-      <Name>XMLFactory</Name>
+    <ProjectReference Include="..\TestCore\TestCore.csproj">
+      <Project>{10e3f476-c18a-40ab-91a9-35be541eab40}</Project>
+      <Name>TestCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

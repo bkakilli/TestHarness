@@ -34,74 +34,71 @@ namespace TestHarness
     public class FileManager<TypeTestID> : IRepository, ILog
     {
         public Logger logger;
+        static string TAG = "FileManager";
 
         string appLocation;
-        string testFolder;
+        string libDirectory;
         string repository;
-        Dictionary<TypeTestID, TempFolder<TypeTestID>> folders;
 
         // Constructor
-        public FileManager(string appLocation_, string testFolder_)
+        public FileManager(string appLocation_, string libDirectory_, Logger logger_)
         {
             appLocation = appLocation_;
-            testFolder = testFolder_;
-            folders = new Dictionary<TypeTestID, TempFolder<TypeTestID>>();
+            libDirectory = libDirectory_;
 
-            logger = new Logger("FileManager");
+            logger = logger_;
         }
 
-        public bool createTempFolder(TypeTestID testID, List<string> fileList)
+        public bool copyLibraries(TypeTestID testID, List<string> fileList)
         {
-            string relativePath = Path.Combine(testFolder, testID.ToString());
-            string fullPath = absPath(relativePath);
-            Directory.CreateDirectory(fullPath);
-
-            TempFolder<TypeTestID> tf = new TempFolder<TypeTestID>(testID, relativePath, fullPath, fileList);
 
             int numOfFilesNotFound = 0;
-            Console.WriteLine("A temporary test directory is created with name {0}", testID);
-            Console.WriteLine("Loading files from repository...\n");
+            Log(TAG, string.Format("Copying files from repository...\n"));
             foreach (string file in fileList)
             {
                 string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(tf.fullPath, fileName);
-
-                string sourceFile = Path.Combine(repository, file);
 
                 try
                 {
-                    //System.IO.File.Copy(sourceFile, destFile, true);
-
                     // file to be found and copied, the destination folder, repository root
-                    bool fileFound = findAndCopyFromRepo(fileName, tf.fullPath, repository);
+                    bool fileFound = findAndCopyFromRepo(fileName, libDirectory, repository);
                     if (!fileFound)
                         numOfFilesNotFound++;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Log(TAG, string.Format("\n", ex.Message));
                 }
             }
 
             if (numOfFilesNotFound > 0)
             {
-                Console.WriteLine("\n{0} libraries are not found and not loaded from repository.", numOfFilesNotFound);
+                Log(TAG, string.Format("\n{0} libraries are not found and not loaded from repository.\n", numOfFilesNotFound));
                 return false;
             }
             else
             {
-                // Console.WriteLine("DLLs are loaded from repository.\n");
-                folders.Add(testID, tf);
+                Log(TAG, string.Format("DLLs are loaded from repository.\n"));
                 return true;
             }
         }
 
-        public string getPath(TypeTestID testID)
+        static public bool removeFolder(string path)
         {
-            return folders[testID].fullPath;
+            try
+            {
+                if(System.IO.Directory.Exists(path))
+                    System.IO.Directory.Delete(Path.GetFullPath(path), true);
+            }
+            catch (Exception)
+            {
+                //
+                return false;
+            }
+            return true;
         }
 
-        public bool removeTempFolder(TypeTestID testID)
+        /*public bool removeTempFolder(TypeTestID testID)
         {
             // Delete a directory and all subdirectories with Directory static method...
             string path = folders[testID].fullPath;
@@ -115,11 +112,11 @@ namespace TestHarness
 
                 catch (System.IO.IOException e)
                 {
-                    Console.WriteLine(e.Message);
+                    Log(TAG, string.Format("{0}\n", e.Message));
                 }
             }
             return true;
-        }
+        }*/
 
         public bool connectToRepo(string repository_)
         {
@@ -129,44 +126,44 @@ namespace TestHarness
             return true;
         }
 
-        public bool findAndCopyFromRepo(string targetFile, string destDirPath, string repository, bool overwrite = true)
+        public bool findAndCopyFromRepo(string targetFile, string libDirectory, string repository, bool overwrite = true)
         {
             // Application specific implementation.
             try
             {
-                string destFile = Path.Combine(destDirPath, targetFile);
+                string destFile = Path.Combine(libDirectory, targetFile);
                 string[] filesFound = Directory.GetFiles(
                     repository, targetFile, SearchOption.AllDirectories);
-                
-                if(filesFound.Length < 1)
+
+                if (filesFound.Length < 1)
                 {
-                    Console.WriteLine(
+                    Log(TAG, string.Format(
                         "Error: There is no file found with search pattern \"{0}\" in repository.",
-                        targetFile);
+                        targetFile));
                     return false;
                 }
                 else
                 {
                     if (filesFound.Length > 1)
                     {
-                        Console.WriteLine(
-                            "Warning: Multiple files are found with search pattern \"{0}\" in repository. Each of them copied into the temporary directory and overwrited if exists.",
-                            targetFile);
-                        // Console.WriteLine("Each of following files are copied into temporary direcroy:");
+                        Log(TAG, string.Format(
+                            "Warning: Multiple files are found with search pattern \"{0}\" in repository.\n",
+                            targetFile));
                     }
+
                     foreach(string sourceFile in filesFound)
                     {
                         System.IO.File.Copy(sourceFile, destFile, overwrite);
-                        // Console.WriteLine("\t" + sourceFile);
+                        Log(TAG, string.Format("File copied: {0}", sourceFile));
                     }
 
+                    Log(TAG, string.Format("\n"));
                 }
-                Console.WriteLine();
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Log(TAG, string.Format("\n", ex.Message));
                 return false;
             }
         }
@@ -176,7 +173,7 @@ namespace TestHarness
             return Path.GetFullPath(Path.Combine(appLocation, relPath));
         }
 
-        public void writeToFile(string filePath, string text)
+        public static void writeToFile(string filePath, string text)
         {
             try
             {
@@ -184,14 +181,26 @@ namespace TestHarness
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not write to the file:\n\t{0}.\n\tDetails: {1}", filePath, ex.Message);
+                Console.WriteLine("Could not write to the file:\n\t{0}.\n\tDetails: {1}\n", filePath, ex.Message);
             }
             
         }
 
-        public void Log(string log)
+        public static string readFile(string path)
         {
-            logger.Log(log);
+            try
+            {
+                return File.ReadAllText(path);
+            }
+            catch (Exception ex)
+            {
+                return string.Format("File could not read:\n{0}\n", ex.Message);
+            }
+        }
+
+        public void Log(string tag, string log)
+        {
+            logger.Log(tag, log);
         }
 
         public string getLog()

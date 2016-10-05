@@ -8,7 +8,7 @@ namespace TestHarness
 {
     public interface ILog
     {
-        void Log(string log);
+        void Log(string tag, string log);
         string getLog();
     }
 }

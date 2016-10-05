@@ -1,0 +1,101 @@
+Tester       : The test request is starting to run in a seperate AppDomain TestingDomain
+XMLFactory   : XML document is loaded.
+XMLFactory   : XML is parsing...
+Tester       : 
+Tester       : Summary of tests which will be executed in test request:
+Tester       : 
+Tester       : Test #1:
+Tester       : 
+Tester       :   test name    : First Test
+Tester       :         author : Jim Fawcett
+Tester       :     authorType : Jim Fawcett
+Tester       :       priority : high
+Tester       :     time stamp : 10/5/2016 10:37:04 AM
+Tester       :    test driver : td1.dll
+Tester       :        library : tc1.dll
+Tester       :        library : tc2.dll
+Tester       : 
+Tester       : 
+Tester       : Test #2:
+Tester       : 
+Tester       :   test name    : Second_Test
+Tester       :         author : Jim Fawcett
+Tester       :     authorType : Jim Fawcett
+Tester       :       priority : high
+Tester       :     time stamp : 10/5/2016 10:37:04 AM
+Tester       :    test driver : Driver.dll
+Tester       :        library : SourceCode.dll
+Tester       : 
+Tester       : 
+Tester       : Executing tests in test request one at a time...
+Tester       : --------- Testing Test_20161005_103704_First Test in TestingDomain
+Tester       : 
+Tester       : Test info:
+Tester       : 
+Tester       :   test name    : First Test
+Tester       :         author : Jim Fawcett
+Tester       :     authorType : Jim Fawcett
+Tester       :       priority : high
+Tester       :     time stamp : 10/5/2016 10:37:04 AM
+Tester       :    test driver : td1.dll
+Tester       :        library : tc1.dll
+Tester       :        library : tc2.dll
+Tester       : 
+Tester       : 
+FileManager  : Copying files from repository...
+FileManager  : 
+FileManager  : Error: There is no file found with search pattern "td1.dll" in repository.
+FileManager  : Error: There is no file found with search pattern "tc1.dll" in repository.
+FileManager  : Error: There is no file found with search pattern "tc2.dll" in repository.
+FileManager  : 
+FileManager  : 3 libraries are not found and not loaded from repository.
+FileManager  : 
+Tester       : Skipping test Test_20161005_103704_First Test.
+Tester       : 
+Tester       : Executing tests in test request one at a time...
+Tester       : --------- Testing Test_20161005_103704_Second_Test in TestingDomain
+Tester       : 
+Tester       : Test info:
+Tester       : 
+Tester       :   test name    : Second_Test
+Tester       :         author : Jim Fawcett
+Tester       :     authorType : Jim Fawcett
+Tester       :       priority : high
+Tester       :     time stamp : 10/5/2016 10:37:04 AM
+Tester       :    test driver : Driver.dll
+Tester       :        library : SourceCode.dll
+Tester       : 
+Tester       : 
+FileManager  : Copying files from repository...
+FileManager  : 
+FileManager  : Warning: Multiple files are found with search pattern "Driver.dll" in repository.
+FileManager  : 
+FileManager  : File copied: \\hd.ad.syr.edu\02\b6f233\Documents\Visual Studio 2015\Projects\TestHarness\Driver\bin\Release\Driver.dll
+FileManager  : File copied: \\hd.ad.syr.edu\02\b6f233\Documents\Visual Studio 2015\Projects\TestHarness\Driver\obj\Release\Driver.dll
+FileManager  : 
+FileManager  : 
+FileManager  : Warning: Multiple files are found with search pattern "SourceCode.dll" in repository.
+FileManager  : 
+FileManager  : File copied: \\hd.ad.syr.edu\02\b6f233\Documents\Visual Studio 2015\Projects\TestHarness\Driver\bin\Release\SourceCode.dll
+FileManager  : File copied: \\hd.ad.syr.edu\02\b6f233\Documents\Visual Studio 2015\Projects\TestHarness\SourceCode\bin\Release\SourceCode.dll
+FileManager  : File copied: \\hd.ad.syr.edu\02\b6f233\Documents\Visual Studio 2015\Projects\TestHarness\SourceCode\obj\Release\SourceCode.dll
+FileManager  : 
+FileManager  : 
+FileManager  : DLLs are loaded from repository.
+FileManager  : 
+Tester       : Loading libraries into child AppDomain TestingDomain...
+Tester       : 
+Tester       : Assembly list in the domain TestingDomain:
+Tester       :    -Driver
+Tester       :     Types:
+Tester       :       +TestHarness.Driver. Has ITest interface? Yes
+Tester       :    -SourceCode
+Tester       :     Types:
+Tester       :       +TestHarness.SourceCode. Has ITest interface? No
+Tester       : 
+Tester       : Testing...
+Tester       : 
+Tester       : Exception caught in Test Driver:
+Tester       : Object reference not set to an instance of an object.
+Tester       : Test Test_20161005_103704_Second_Test has FAILed
+Tester       : 

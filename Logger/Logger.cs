@@ -8,13 +8,15 @@ namespace TestHarness
 {
     public class Logger : ILog
     {
-        List<string> logList;
-        string tag;
+        public bool verbose;
 
-        public Logger(string tag_)
+        List<string> logList;
+
+        public Logger()
         {
-            tag = tag_;
             logList = new List<string>();
+
+            verbose = false;
         }
 
         public string getLog()
@@ -23,25 +25,24 @@ namespace TestHarness
 
             foreach(string l in logList)
             {
-                log += String.Format("{0}\t:{1}\n", tag, l);
+                log += String.Format("{0}\n", l);
             }
 
             return log;
         }
 
-        public void Log(string log)
+        public void Log(string tag, string log)
         {
+            log = log.Replace("\n", string.Format("\n{0,-12} : ", tag));
+            log = string.Format("{0,-12} : {1}", tag, log);
             logList.Add(log);
+            if (verbose)
+                Console.WriteLine(log);
         }
 
         public List<string> getLogList()
         {
             return logList;
-        }
-
-        public void appendLog(List<string> newList)
-        {
-            logList.AddRange(newList);
         }
     }
 }

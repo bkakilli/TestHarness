@@ -22,42 +22,49 @@ namespace TestHarness
         public string testDriver { get; set; }
         public List<string> testCode { get; set; }
 
-        public void show()
+        override public string ToString()
         {
-            Console.Write("\n  {0,-12} : {1}", "test name", testName);
-            Console.Write("\n  {0,12} : {1}", "author", author);
-            Console.Write("\n  {0,12} : {1}", "authorType", authorType);
-            Console.Write("\n  {0,12} : {1}", "priority", priority);
-            Console.Write("\n  {0,12} : {1}", "time stamp", timeStamp);
-            Console.Write("\n  {0,12} : {1}", "test driver", testDriver);
+            string res = "";
+            res += string.Format("\n  {0,-12} : {1}", "test name", testName);
+            res += string.Format("\n  {0,12} : {1}", "author", author);
+            res += string.Format("\n  {0,12} : {1}", "authorType", authorType);
+            res += string.Format("\n  {0,12} : {1}", "priority", priority);
+            res += string.Format("\n  {0,12} : {1}", "time stamp", timeStamp);
+            res += string.Format("\n  {0,12} : {1}", "test driver", testDriver);
             foreach (string library in testCode)
             {
-                Console.Write("\n  {0,12} : {1}", "library", library);
+                res += string.Format("\n  {0,12} : {1}", "library", library);
             }
-            Console.WriteLine();
+            res += string.Format("\n");
+
+            return res;
         }
     }
 
     public class XMLFactory : ILog
     {
         Logger logger;
+        string TAG = "XMLFactory";
 
         XDocument doc_;
         List<Test> testList_;
-        public XMLFactory()
+        public XMLFactory(Logger logger_)
         {
             doc_ = new XDocument();
             testList_ = new List<Test>();
-            logger = new Logger("XMLFactory");
+            logger = logger_;
+
         }
         public bool parse(System.IO.Stream xml)
         {
             doc_ = XDocument.Load(xml);
             if (doc_ == null)
             {
-                Console.WriteLine("Error: XML document is found but could not been loaded.");
+                Log(TAG, "Error: XML document is found but could not been loaded.\n");
                 return false;
             }
+            Log(TAG, string.Format("XML document is loaded."));
+            Log(TAG, string.Format("XML is parsing..."));
             try {
                 string author = doc_.Descendants("author").First().Value;
                 string authorType = doc_.Descendants("author").First().Attribute("type").Value;
@@ -68,7 +75,7 @@ namespace TestHarness
 
                 if (xtests.Count() < 1)
                 {
-                    Console.WriteLine("Error: Could not find any test in test request.");
+                    Log(TAG, "Error: Could not find any test in test request.\n");
                     return false;
                 }
 
@@ -91,7 +98,7 @@ namespace TestHarness
                 }
             } catch(Exception ex)
             {
-                Console.WriteLine("Error: Parse error. Details:\n{0}", ex.Message);
+                Log(TAG, string.Format("Error: Parse error. Details:\n{0}\n", ex.Message));
                 return false;
             }
             
@@ -103,9 +110,9 @@ namespace TestHarness
             return testList_;
         }
 
-        public void Log(string log)
+        public void Log(string tag, string log)
         {
-            logger.Log(log);
+            logger.Log(tag, log);
         }
 
         public string getLog()

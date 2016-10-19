@@ -1,11 +1,11 @@
 /////////////////////////////////////////////////////////////////////////////
 //  BlockingQueue.cs - demonstrate threads communicating via Queue         //
-//  ver 4.0                                                                //
-//  Language:     C#, VS 2003                                              //
-//  Platform:     Dell Dimension 8100, Windows 2000 Pro, SP2               //
-//  Application:  Demonstration for CSE681 - Software Modeling & Analysis  //
-//  Author:       Jim Fawcett, CST 2-187, Syracuse University              //
-//                (315) 443-3948, jfawcett@twcny.rr.com                    //
+//  ver 0.5                                                                //
+//  Language:     C#, VS 2015, .NET Framework 4.5.2                        //
+//  Platform:     Windows 10                                               //
+//  Application:  Test Harness, CSE681 - Project 2                         //
+//  Author:       Jim Fawcett, Syracuse University                         //
+//                jfawcett@twcny.rr.com                                    //
 /////////////////////////////////////////////////////////////////////////////
 /*
  *   Module Operations
@@ -101,39 +101,59 @@ namespace TestHarness
         {
             lock (locker_) { blockingQ.Clear(); }
         }
-    }
-/*
-#if(CONSTR_TEST)
 
-  class Program
-  {
-    static void Main(string[] args)
-    {
-      Console.Write("\n  Testing Monitor-Based Blocking Queue");
-      Console.Write("\n ======================================");
-
-      SWTools.BlockingQueue<string> q = new SWTools.BlockingQueue<string>();
-      Thread t = new Thread(() =>
-      {
-        string msg;
-        while (true)
+        public override string ToString()
         {
-          msg = q.deQ(); Console.Write("\n  child thread received {0}", msg);
-          if (msg == "quit") break;
+            string res = "";
+            lock (locker_)
+            {
+                foreach(string xml in blockingQ)
+                {
+                    res += xml + "\n";
+                }
+            }
+            return res;
         }
-      });
-      t.Start();
-      string sendMsg = "msg #";
-      for (int i = 0; i < 20; ++i)
-      {
-        string temp = sendMsg + i.ToString();
-        Console.Write("\n  main thread sending {0}", temp);
-        q.enQ(temp);
-      }
-      q.enQ("quit");
-      t.Join();
-      Console.Write("\n\n");
     }
-  }
-#endif*/
+
+#if (BlockingQueue_TEST)
+
+    class Program
+    {
+        public static void Main(string[] args)
+        {
+            try
+            {
+                Console.Write("\n  Testing Monitor-Based Blocking Queue");
+                Console.Write("\n ======================================");
+
+                BlockingQueue<string> q = new BlockingQueue<string>();
+                Thread t = new Thread(() =>
+                {
+                    string msg;
+                    while (true)
+                    {
+                        msg = q.deQ(); Console.Write("\n  child thread received {0}", msg);
+                        if (msg == "quit") break;
+                    }
+                });
+                t.Start();
+                string sendMsg = "msg #";
+                for (int i = 0; i < 20; ++i)
+                {
+                    string temp = sendMsg + i.ToString();
+                    Console.Write("\n  main thread sending {0}", temp);
+                    q.enQ(temp);
+                }
+                q.enQ("quit");
+                t.Join();
+                Console.Write("\n\n");
+            }
+            catch (Exception ex)
+            {
+                Console.Write("\n\n  {0}", ex.Message);
+            }
+        }
+    }
+#endif
 }

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/////////////////////////////////////////////////////////////////////////////
+//  Tester.cs - Receives an XML test request, runs it, and provides log    //
+//  ver 0.5                                                                //
+//  Language:     C#, VS 2015, .NET Framework 4.5.2                        //
+//  Platform:     Windows 10                                               //
+//  Application:  Test Harness, CSE681 - Project 2                         //
+//  Author:       Burak Kakillioglu, Syracuse University                   //
+//                bkakilli@syr.edu                                         //
+/////////////////////////////////////////////////////////////////////////////
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +22,7 @@ namespace TestHarness
     public class Tester : MarshalByRefObject, ILog
     {
         public Logger logger;
+        public string testRequestID;
         string TAG = "Tester";
 
         FileManager<string> fm;
@@ -25,19 +35,22 @@ namespace TestHarness
             Log(TAG, string.Format("The test request is starting to run in a seperate AppDomain {0}",
                 AppDomain.CurrentDomain.FriendlyName));
         }
-        
-        public bool executeRequest(string xmlFile, string appLocation, string repository, string libDirectory)
+
+        public bool executeRequest(string xmlFile, string appLocation, string repository, string libDirectory, string testRequestFolderName = "TestRequests")
         {
+            testRequestID = "nonExistingTestRequest";
             //// Parse XML and create test list. For each test in test list, create a child app domain 
             //// and load all files in the test and load libraries into that child app domain.
-            
+
             fm = new FileManager<string>(appLocation, libDirectory, logger);
             fm.connectToRepo(repository);
             //FileManager<string>.removeFolder(Path.Combine(appLocation, libDirectory));
 
             XMLFactory xf = new XMLFactory(logger);
 
-            string xmlPath = Path.GetFullPath(Path.Combine(appLocation, xmlFile));
+            if (Path.GetExtension(xmlFile) == "")
+                xmlFile = xmlFile + ".xml";
+            string xmlPath = Path.GetFullPath(Path.Combine(appLocation, repository, testRequestFolderName, xmlFile));
             System.IO.FileStream xml;
             try
             {
@@ -60,10 +73,18 @@ namespace TestHarness
                 return false;
             }
 
-            Log(TAG, string.Format("\nSummary of tests which will be executed in test request:\n"));
+            if(xf.getTests().Count > 0)
+            {
+                Test test = xf.getTests()[0];
+                testRequestID = test.author + test.timeStamp.ToString("_yyyyMMdd_HHmmss");
+                testRequestID = testRequestID.Replace(" ", "_");
+            }
+
+            Log(TAG, string.Format("ID of the test request: {0}", testRequestID));
+            Log(TAG, string.Format("Summary of tests which will be executed in test request:\n"));
             List<Test> testList = xf.getTests();
             int count = 0;
-            foreach(Test test in testList)
+            foreach (Test test in testList)
             {
                 count++;
                 Log(TAG, string.Format("Test #{0}:\n{1}\n", count, test.ToString()));
@@ -93,7 +114,7 @@ namespace TestHarness
                 {
                     Log(TAG, string.Format("Skipping test {0}.\n", testID));
                     continue;
-                }        
+                }
 
                 // Load libraries into 
                 if (!LoadLibraries(libDirectory))
@@ -173,17 +194,17 @@ namespace TestHarness
                 }
             }
 
-            if(iTestFound == 0)
+            if (iTestFound == 0)
             {
                 Log(TAG, string.Format("Error: Could not find a type with ITest interface in library {0}", driverName));
                 Log(TAG, string.Format("{0}\n", getAssemblyList(AppDomain.CurrentDomain)));
                 return false;
             }
-            else if(iTestFound > 1)
+            else if (iTestFound > 1)
             {
                 Log(TAG, string.Format("Warning: Multiple types with ITest interface are found in library {0}. Using the last one.", driverName));
             }
-            
+
             try
             {
                 objHandle = AppDomain.CurrentDomain.CreateInstance
@@ -194,7 +215,7 @@ namespace TestHarness
             {
                 Console.WriteLine(ex.Message);
             }
-            
+
             return true;
         }
 
@@ -245,7 +266,7 @@ namespace TestHarness
                 res += string.Format("   -{0}\n", assemblyName);
                 res += string.Format("    Types:\n");
                 Type[] types = assem.GetTypes();
-                foreach(Type type in types)
+                foreach (Type type in types)
                 {
                     Type iTestType = type.GetInterface("ITest");
                     string isITest = (iTestType == null) ? "No" : "Yes";
@@ -270,5 +291,33 @@ namespace TestHarness
         {
             return logger.getLog();
         }
+
+#if (Tester_TEST)
+        public static void Main(string[] args)
+        {
+            try
+            {
+                Console.Write("\n  Testing Tester Project");
+                Console.Write("\n =======================\n");
+                Tester tester = new Tester();
+                tester.setVerbose(true);
+
+                string xmlFile = args[0];
+                string repository = args[1];
+                string libDirectory = "testLibDirectory";
+                string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+                tester.executeRequest(
+                    xmlFile, appLocation, repository, libDirectory, "testStubFiles");
+
+                Console.WriteLine("Testing of 'Tester' project is almost finished. getLog() function will print above once again.");
+                Console.WriteLine(tester.getLog());
+            }
+            catch (Exception ex)
+            {
+                Console.Write("\n\n  {0}", ex.Message);
+            }
+        }
+#endif
     }
 }

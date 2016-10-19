@@ -1,14 +1,20 @@
-﻿/////////////////////////////////////////////////////////////////////
-// XmlTest.cs - Help Session Demonstration of XML Processing       //
-//                                                                 //
-// Jim Fawcett, CSE681 - Software Modeling and Analysis, F2016     //
-/////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
+//  XMLFactory.cs - Parses XML files and holds Test enties described in XML //
+//  ver 0.5                                                                 //
+//  Language:     C#, VS 2015, .NET Framework 4.5.2                         //
+//  Platform:     Windows 10                                                //
+//  Application:  Test Harness, CSE681 - Project 2                          //
+//  Author:       Jim Fawcett and Burak Kakillioglu, Syracuse University    //
+//                jfawcett@twcny.rr.com, bkakilli@syr.edu                   //
+//////////////////////////////////////////////////////////////////////////////
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.IO;
 
 namespace TestHarness
 {
@@ -120,18 +126,25 @@ namespace TestHarness
             return logger.getLog();
         }
 
-#if (CONSTR_TEST)
+#if (XMLFactory_TEST)
         static void Main(string[] args)
         {
-            XMLFactory demo = new XMLFactory();
+            Logger logger = new Logger();
+            XMLFactory demo = new XMLFactory(logger);
             try
             {
-                string path = "../../TestRequest.xml";
+                string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                string xmlFile = args[0];
+                string path = Path.GetFullPath(Path.Combine(appLocation, xmlFile));
+
+                Console.WriteLine("XML file is parsing...");
                 System.IO.FileStream xml = new System.IO.FileStream(path, System.IO.FileMode.Open);
                 demo.parse(xml);
+                int count = 0;
                 foreach (Test test in demo.testList_)
                 {
-                    test.show();
+                    count++;
+                    Console.WriteLine("Test #{0}:\n{1}", count, test.ToString());
                 }
             }
             catch (Exception ex)

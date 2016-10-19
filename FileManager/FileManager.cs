@@ -1,33 +1,22 @@
-﻿using System;
+﻿////////////////////////////////////////////////////////////////////////////////
+//  FileManager.cs - Provides functionality for directory and file management //
+//  ver 0.5                                                                   //
+//  Language:     C#, VS 2015, .NET Framework 4.5.2                           //
+//  Platform:     Windows 10                                                  //
+//  Application:  Test Harness, CSE681 - Project 2                            //
+//  Author:       Burak Kakillioglu, Syracuse University                      //
+//                bkakilli@syr.edu                                            //
+////////////////////////////////////////////////////////////////////////////////
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TestHarness
 {
-
-    public class TempFolder<TypeTestID>
-    {
-        public TypeTestID uniqueId = default(TypeTestID);   // Unique id of test
-        public string relativePath = "";
-        public string fullPath = "";
-        public List<string> fileList = null;
-
-        public TempFolder (TypeTestID testID, string relativePath_, string fullPath_, List<string> fileList_ = null)
-        {
-            uniqueId = testID;
-            relativePath = relativePath_;
-            fullPath = fullPath_;
-            fileList = fileList_ == null ? new List<string>() : fileList_;
-        }
-
-        public void show()
-        {
-
-        }
-    }
 
     // File Manager always gets paths for the target DLLs relative to the repository folder.
     // It works in the path that application runs.
@@ -98,26 +87,6 @@ namespace TestHarness
             return true;
         }
 
-        /*public bool removeTempFolder(TypeTestID testID)
-        {
-            // Delete a directory and all subdirectories with Directory static method...
-            string path = folders[testID].fullPath;
-            if (System.IO.Directory.Exists(path))
-            {
-                try
-                {
-                    folders.Remove(testID);
-                    System.IO.Directory.Delete(path, true);
-                }
-
-                catch (System.IO.IOException e)
-                {
-                    Log(TAG, string.Format("{0}\n", e.Message));
-                }
-            }
-            return true;
-        }*/
-
         public bool connectToRepo(string repository_)
         {
             // Application specific implementation.
@@ -177,6 +146,8 @@ namespace TestHarness
         {
             try
             {
+                if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 File.WriteAllText(filePath, text);
             }
             catch (Exception ex)
@@ -207,5 +178,46 @@ namespace TestHarness
         {
             return logger.getLog();
         }
+
+#if (FileManager_TEST)
+        public static void Main(string[] args)
+        {
+            Console.Write("\n  Testing FileManager Project");
+            Console.Write("\n ============================\n");
+
+            string repository = args[0];
+            string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string libDirectory = "testLibDirectory";
+            Logger logger = new Logger();
+            logger.verbose = true;
+
+            if(!Directory.Exists(Path.Combine(appLocation, libDirectory)))
+                Directory.CreateDirectory(
+                    Path.Combine(appLocation, libDirectory));
+
+            FileManager<string> fm = new FileManager<string>(appLocation, libDirectory, logger);
+
+            fm.connectToRepo(repository);
+            List<string> fileList = new List<string>();
+            fileList.Add("sampleFile1_does_not_exist.txt");
+            fileList.Add("sampleFile2_does_not_exist.txt");
+            fileList.Add("Driver.dll_exists.txt");
+
+            string testID = "sampleTestID";
+
+            Console.WriteLine("Existing files in fileList is copying to the {0} folder", libDirectory);
+            fm.copyLibraries(testID, fileList);
+
+            string testFile = Path.Combine(libDirectory, "testFile.txt");
+            string sampleText = "Construction test\nfor the FileManager package.";
+            FileManager<string>.writeToFile(testFile, sampleText);
+
+            Console.WriteLine("Reading from file testFile.txt which has just been written:\n{0}",
+                FileManager<string>.readFile(testFile));
+
+            FileManager<string>.removeFolder(Path.Combine(appLocation, libDirectory));
+
+        }
+#endif
     }
 }

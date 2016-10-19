@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<testRequest>
+  <author type="instructor">Jim Fawcett</author>
+  <priority>high</priority>
+  <test name="First Test">
+    <testDriver>Driver.dll</testDriver>
+    <library>SourceCode.dll</library>
+    <library>SourceCode1_2.dll</library>
+  </test>
+  <test name="Second Test">
+    <testDriver>Driver_2.dll</testDriver>
+    <library>SourceCode_2_1.dll</library>
+  </test>
+  <test name="Third Test">
+    <testDriver>Driver3.dll</testDriver>
+    <library>SourceCode_3_1.dll</library>
+  </test>
+</testRequest>

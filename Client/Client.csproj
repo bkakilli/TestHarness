@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FileManager\FileManager.csproj">
+      <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
+      <Name>FileManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.csproj">
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>

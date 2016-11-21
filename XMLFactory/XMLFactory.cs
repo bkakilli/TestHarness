@@ -18,35 +18,6 @@ using System.IO;
 
 namespace TestHarness
 {
-    public class Test
-    {
-        public string testName { get; set; }
-        public string author { get; set; }
-        public string authorType { get; set; }
-        public string priority { get; set; }
-        public DateTime timeStamp { get; set; }
-        public string testDriver { get; set; }
-        public List<string> testCode { get; set; }
-
-        override public string ToString()
-        {
-            string res = "";
-            res += string.Format("\n  {0,-12} : {1}", "test name", testName);
-            res += string.Format("\n  {0,12} : {1}", "author", author);
-            res += string.Format("\n  {0,12} : {1}", "authorType", authorType);
-            res += string.Format("\n  {0,12} : {1}", "priority", priority);
-            res += string.Format("\n  {0,12} : {1}", "time stamp", timeStamp);
-            res += string.Format("\n  {0,12} : {1}", "test driver", testDriver);
-            foreach (string library in testCode)
-            {
-                res += string.Format("\n  {0,12} : {1}", "library", library);
-            }
-            res += string.Format("\n");
-
-            return res;
-        }
-    }
-
     public class XMLFactory : ILog
     {
         Logger logger;

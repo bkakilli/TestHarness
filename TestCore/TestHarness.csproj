@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{10E3F476-C18A-40AB-91A9-35BE541EAB40}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestCore</RootNamespace>
     <AssemblyName>TestCore</AssemblyName>
@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;BlockingQueue_TEST; TestCore_TEST</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,14 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockingQueue.cs" />
-    <Compile Include="TestCore.cs" />
+    <Compile Include="TestHarness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BlockingQueue\BlockingQueue.csproj">
+      <Project>{3fac4ea2-01d8-4f29-91ff-a0d722bbb23d}</Project>
+      <Name>BlockingQueue</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FileManager\FileManager.csproj">
       <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
       <Name>FileManager</Name>
@@ -63,9 +66,21 @@
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Server\ComServer.csproj">
+      <Project>{fda1841c-7b05-4fb8-b3e6-4e49362feeed}</Project>
+      <Name>ComServer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\CommService.csproj">
+      <Project>{5335d5d4-1c68-4c75-9156-7a886f1982e5}</Project>
+      <Name>CommService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tester\Tester.csproj">
       <Project>{37bc6a84-d050-4c66-8be1-8cb8294de21f}</Project>
       <Name>Tester</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestRequest\TestRequest.csproj">
+      <Project>{3c0e4ad7-0851-473f-848c-af46d77a1a9e}</Project>
+      <Name>TestRequest</Name>
     </ProjectReference>
     <ProjectReference Include="..\XMLFactory\XMLFactory.csproj">
       <Project>{0b052889-61f7-401c-80bc-f8b79b7336b9}</Project>

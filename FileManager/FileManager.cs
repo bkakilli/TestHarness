@@ -20,57 +20,49 @@ namespace TestHarness
 
     // File Manager always gets paths for the target DLLs relative to the repository folder.
     // It works in the path that application runs.
-    public class FileManager<TypeTestID> : IRepository, ILog
+    public class FileManager<TypeTestID> : ILog
     {
         public Logger logger;
         static string TAG = "FileManager";
 
-        string appLocation;
-        string libDirectory;
-        string repository;
-
         // Constructor
-        public FileManager(string appLocation_, string libDirectory_, Logger logger_)
+        public FileManager(Logger logger_)
         {
-            appLocation = appLocation_;
-            libDirectory = libDirectory_;
 
             logger = logger_;
         }
 
-        public bool copyLibraries(TypeTestID testID, List<string> fileList)
-        {
+        //public bool copyLibraries(List<string> fileList, string libDirectory)
+        //{
 
-            int numOfFilesNotFound = 0;
-            Log(TAG, string.Format("Copying files from repository...\n"));
-            foreach (string file in fileList)
-            {
-                string fileName = Path.GetFileName(file);
+        //    int numOfFilesNotFound = 0;
+        //    Log(TAG, string.Format("Copying files from repository...\n"));
+        //    foreach (string file in fileList)
+        //    {
+        //        try
+        //        {
+        //            // file to be found and copied, the destination folder, repository root
+        //            bool fileFound = findAndCopyFromRepo(file, libDirectory);
+        //            if (!fileFound)
+        //                numOfFilesNotFound++;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Log(TAG, string.Format("\n", ex.Message));
+        //        }
+        //    }
 
-                try
-                {
-                    // file to be found and copied, the destination folder, repository root
-                    bool fileFound = findAndCopyFromRepo(fileName, libDirectory, repository);
-                    if (!fileFound)
-                        numOfFilesNotFound++;
-                }
-                catch (Exception ex)
-                {
-                    Log(TAG, string.Format("\n", ex.Message));
-                }
-            }
-
-            if (numOfFilesNotFound > 0)
-            {
-                Log(TAG, string.Format("\n{0} libraries are not found and not loaded from repository.\n", numOfFilesNotFound));
-                return false;
-            }
-            else
-            {
-                Log(TAG, string.Format("DLLs are loaded from repository.\n"));
-                return true;
-            }
-        }
+        //    if (numOfFilesNotFound > 0)
+        //    {
+        //        Log(TAG, string.Format("\n{0} libraries are not found and not loaded from repository.\n", numOfFilesNotFound));
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        Log(TAG, string.Format("DLLs are loaded from repository.\n"));
+        //        return true;
+        //    }
+        //}
 
         static public bool removeFolder(string path)
         {
@@ -87,60 +79,46 @@ namespace TestHarness
             return true;
         }
 
-        public bool connectToRepo(string repository_)
-        {
-            // Application specific implementation.
-            // repository_ is the relative path to the repo folder from application path.
-            repository = absPath(repository_);
-            return true;
-        }
+        //public bool findAndCopyFromRepo(string searchPattern, string libDirectory, bool overwrite = true)
+        //{
+        //    // Application specific implementation.
+        //    try
+        //    {
+        //        string[] filesFound = Directory.GetFiles(
+        //            repository, searchPattern, SearchOption.AllDirectories);
 
-        public bool findAndCopyFromRepo(string targetFile, string libDirectory, string repository, bool overwrite = true)
-        {
-            // Application specific implementation.
-            try
-            {
-                string destFile = Path.Combine(libDirectory, targetFile);
-                string[] filesFound = Directory.GetFiles(
-                    repository, targetFile, SearchOption.AllDirectories);
+        //        if (filesFound.Length < 1)
+        //        {
+        //            Log(TAG, string.Format(
+        //                "Error: There is no file found with search pattern \"{0}\" in repository.",
+        //                targetFile));
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            if (filesFound.Length > 1)
+        //            {
+        //                Log(TAG, string.Format(
+        //                    "Warning: Multiple files are found with search pattern \"{0}\" in repository.\n",
+        //                    targetFile));
+        //            }
 
-                if (filesFound.Length < 1)
-                {
-                    Log(TAG, string.Format(
-                        "Error: There is no file found with search pattern \"{0}\" in repository.",
-                        targetFile));
-                    return false;
-                }
-                else
-                {
-                    if (filesFound.Length > 1)
-                    {
-                        Log(TAG, string.Format(
-                            "Warning: Multiple files are found with search pattern \"{0}\" in repository.\n",
-                            targetFile));
-                    }
+        //            foreach(string sourceFile in filesFound)
+        //            {
+        //                System.IO.File.Copy(sourceFile, targetFilePath, overwrite);
+        //                Log(TAG, string.Format("File copied: {0}", sourceFile));
+        //            }
 
-                    foreach(string sourceFile in filesFound)
-                    {
-                        System.IO.File.Copy(sourceFile, destFile, overwrite);
-                        Log(TAG, string.Format("File copied: {0}", sourceFile));
-                    }
-
-                    Log(TAG, string.Format("\n"));
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log(TAG, string.Format("\n", ex.Message));
-                return false;
-            }
-        }
-
-        public string absPath(string relPath)
-        {
-            return Path.GetFullPath(Path.Combine(appLocation, relPath));
-        }
+        //            Log(TAG, string.Format("\n"));
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log(TAG, string.Format("\n", ex.Message));
+        //        return false;
+        //    }
+        //}
 
         public static void writeToFile(string filePath, string text)
         {
@@ -195,9 +173,8 @@ namespace TestHarness
                 Directory.CreateDirectory(
                     Path.Combine(appLocation, libDirectory));
 
-            FileManager<string> fm = new FileManager<string>(appLocation, libDirectory, logger);
-
-            fm.connectToRepo(repository);
+            FileManager<string> fm = new FileManager<string>(logger);
+            
             List<string> fileList = new List<string>();
             fileList.Add("sampleFile1_does_not_exist.txt");
             fileList.Add("sampleFile2_does_not_exist.txt");
@@ -206,7 +183,7 @@ namespace TestHarness
             string testID = "sampleTestID";
 
             Console.WriteLine("Existing files in fileList is copying to the {0} folder", libDirectory);
-            fm.copyLibraries(testID, fileList);
+            //fm.copyLibraries(fileList, libDirectory);
 
             string testFile = Path.Combine(libDirectory, "testFile.txt");
             string sampleText = "Construction test\nfor the FileManager package.";

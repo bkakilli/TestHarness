@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TestHarness")]
+[assembly: AssemblyTitle("StreamService")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Syracuse University")]
-[assembly: AssemblyProduct("TestHarness")]
+[assembly: AssemblyProduct("StreamService")]
 [assembly: AssemblyCopyright("Copyright © Syracuse University 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("10e3f476-c18a-40ab-91a9-35be541eab40")]
+[assembly: Guid("29e7f59b-6294-41a2-babf-59392d0406fc")]
 
 // Version information for an assembly consists of the following four values:
 //

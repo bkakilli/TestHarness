@@ -62,6 +62,10 @@
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestRequest\TestRequest.csproj">
+      <Project>{3c0e4ad7-0851-473f-848c-af46d77a1a9e}</Project>
+      <Name>TestRequest</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

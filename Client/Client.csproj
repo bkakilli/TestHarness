@@ -35,6 +35,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,17 +53,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileManager\FileManager.csproj">
-      <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
-      <Name>FileManager</Name>
+    <ProjectReference Include="..\IService\ICommService.csproj">
+      <Project>{1355de18-03a1-4fae-8e32-58dc8940411e}</Project>
+      <Name>ICommService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Logger\Logger.csproj">
-      <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
-      <Name>Logger</Name>
+    <ProjectReference Include="..\Service\CommService.csproj">
+      <Project>{5335d5d4-1c68-4c75-9156-7a886f1982e5}</Project>
+      <Name>CommService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestCore\TestCore.csproj">
-      <Project>{10e3f476-c18a-40ab-91a9-35be541eab40}</Project>
-      <Name>TestCore</Name>
+    <ProjectReference Include="..\StreamService\StreamService.csproj">
+      <Project>{29e7f59b-6294-41a2-babf-59392d0406fc}</Project>
+      <Name>StreamService</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

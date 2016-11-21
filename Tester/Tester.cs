@@ -22,10 +22,9 @@ namespace TestHarness
     public class Tester : MarshalByRefObject, ILog
     {
         public Logger logger;
-        public string testRequestID;
+        //public string testRequestID;
         string TAG = "Tester";
 
-        FileManager<string> fm;
         ObjectHandle objHandle;
         ITest driver;
 
@@ -36,94 +35,38 @@ namespace TestHarness
                 AppDomain.CurrentDomain.FriendlyName));
         }
 
-        public bool executeRequest(string xmlFile, string appLocation, string repository, string libDirectory, string testRequestFolderName = "TestRequests")
+        public bool executeRequest(string serializedTestRequest)
         {
-            testRequestID = "nonExistingTestRequest";
-            //// Parse XML and create test list. For each test in test list, create a child app domain 
-            //// and load all files in the test and load libraries into that child app domain.
 
-            fm = new FileManager<string>(appLocation, libDirectory, logger);
-            fm.connectToRepo(repository);
-            //FileManager<string>.removeFolder(Path.Combine(appLocation, libDirectory));
+            TestRequest testRequest = TestRequest.deserialize(serializedTestRequest);
 
-            XMLFactory xf = new XMLFactory(logger);
-
-            if (Path.GetExtension(xmlFile) == "")
-                xmlFile = xmlFile + ".xml";
-            string xmlPath = Path.GetFullPath(Path.Combine(appLocation, repository, testRequestFolderName, xmlFile));
-            System.IO.FileStream xml;
-            try
-            {
-                xml = new System.IO.FileStream(xmlPath, System.IO.FileMode.Open);
-            }
-            catch (FileNotFoundException)
-            {
-                Log(TAG, string.Format("Test request file is not found in provided path: {0}\n", xmlPath));
-                return false;
-            }
-            catch (Exception)
-            {
-                Log(TAG, string.Format("Test request file could not be opened.\n", xmlPath));
-                return false;
-            }
-
-            if (!xf.parse(xml))
-            {
-                Log(TAG, string.Format("Skiping test request.\n"));
-                return false;
-            }
-
-            if(xf.getTests().Count > 0)
-            {
-                Test test = xf.getTests()[0];
-                testRequestID = test.author + test.timeStamp.ToString("_yyyyMMdd_HHmmss");
-                testRequestID = testRequestID.Replace(" ", "_");
-            }
-
-            Log(TAG, string.Format("ID of the test request: {0}", testRequestID));
+            Log(TAG, string.Format("ID of the test request: {0}", testRequest.ID));
             Log(TAG, string.Format("Summary of tests which will be executed in test request:\n"));
-            List<Test> testList = xf.getTests();
+            List<Test> testList = testRequest.tests;
             int count = 0;
             foreach (Test test in testList)
             {
                 count++;
-                Log(TAG, string.Format("Test #{0}:\n{1}\n", count, test.ToString()));
+                Log(TAG, string.Format("Test #{0}:\n{1}\n", count, test.tostr));
             }
 
 
             Log(TAG, string.Format("Executing tests in test request one at a time..."));
             foreach (Test test in testList)
             {
-                // Create a unique ID for each test in test request.
-                string testID = string.Format("Test_{0}_{1}",
-                    test.timeStamp.ToString("yyyyMMdd_HHmmss"),
-                    (test.testName != "") ? test.testName : testList.Count.ToString());
 
                 Log(TAG, string.Format("\n--------- Testing {0} in {1}\n",
-                    testID, AppDomain.CurrentDomain.FriendlyName));
-                Log(TAG, string.Format("Test info:\n{0}\n", test.ToString()));
-
-                // Create filelist to be copied from repository
-                List<string> fileList = new List<string>();
-                fileList.Add(test.testDriver);
-                foreach (string sourceCode in test.testCode)
-                    fileList.Add(sourceCode);
-
-                // Create the temporary folder for current test to load the libraries from
-                if (!fm.copyLibraries(testID, fileList))
-                {
-                    Log(TAG, string.Format("Skipping test {0}.\n", testID));
-                    continue;
-                }
+                    test.ID, AppDomain.CurrentDomain.FriendlyName));
+                Log(TAG, string.Format("Test info:\n{0}\n", test.tostr));
 
                 // Load libraries into 
-                if (!LoadLibraries(libDirectory))
+                if (!LoadLibraries(testRequest.libDirectory))
                 {
                     Log(TAG, string.Format("Error: Could not load libraries.\n\n"));
                     continue;
                 }
 
-                Log(TAG, getAssemblyList(AppDomain.CurrentDomain));
+                //Log(TAG, getAssemblyList(AppDomain.CurrentDomain));
 
                 // Logging here.
 
@@ -133,11 +76,9 @@ namespace TestHarness
                 {
                     Log(TAG, string.Format("Testing...\n"));
                     testResult = RunTest();
-                    Log(TAG, string.Format("Test {0} has {1}ed\n", testID, testResult ? "PASS" : "FAIL"));
+                    Log(TAG, string.Format("Test {0} has {1}ed\n", test.ID, testResult ? "PASS" : "FAIL"));
                 }
             }
-
-            xml.Close();
 
             return true;
         }
@@ -307,8 +248,7 @@ namespace TestHarness
                 string libDirectory = "testLibDirectory";
                 string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
-                tester.executeRequest(
-                    xmlFile, appLocation, repository, libDirectory, "testStubFiles");
+                //tester.executeRequest(xmlFile);
 
                 Console.WriteLine("Testing of 'Tester' project is almost finished. getLog() function will print above once again.");
                 Console.WriteLine(tester.getLog());

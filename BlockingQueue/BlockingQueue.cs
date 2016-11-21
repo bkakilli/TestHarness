@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////
+﻿/////////////////////////////////////////////////////////////////////////////
 //  BlockingQueue.cs - demonstrate threads communicating via Queue         //
 //  ver 0.5                                                                //
 //  Language:     C#, VS 2015, .NET Framework 4.5.2                        //
@@ -107,7 +107,7 @@ namespace TestHarness
             string res = "";
             lock (locker_)
             {
-                foreach(string xml in blockingQ)
+                foreach (string xml in blockingQ)
                 {
                     res += xml + "\n";
                 }

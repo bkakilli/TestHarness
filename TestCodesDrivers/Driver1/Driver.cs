@@ -17,6 +17,11 @@ namespace TestHarness
             return sourceCode.getFromSource2();
         }
 
+        public static void Main(string[] args)
+        {
+
+        }
+
     }
 
 }

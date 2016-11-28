@@ -12,12 +12,11 @@ namespace TestHarness
     public class StreamService : IStreamService
     {
         string filename;
-        public string FileReceivePath = @"SavedFiles";
-        public string FileSendPath = @"ToSend";
+        string FileReceivePath = @"SavedFiles";
+        string FileSendPath = @"ToSend";
         int BlockSize = 1024;
         byte[] block;
-        public string fileStreamServerUrl = "http://localhost:8000/StreamService";
-        public string appLocation;
+        string appLocation;
 
         ServiceHost fileHost;
 
@@ -27,9 +26,12 @@ namespace TestHarness
             appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             FileReceivePath = Path.GetFullPath(Path.Combine(appLocation, FileReceivePath));
             FileSendPath = Path.GetFullPath(Path.Combine(appLocation, FileSendPath));
+
+            if (!Directory.Exists(FileReceivePath))
+                Directory.CreateDirectory(FileReceivePath);
         }
 
-        public void Start()
+        public void Start(string fileStreamServerUrl)
         {
             // File streaming
 
@@ -45,8 +47,7 @@ namespace TestHarness
             //hrt.Start();
             filename = msg.filename;
             string rfilename = Path.Combine(this.FileReceivePath, filename);
-            if (!Directory.Exists(FileReceivePath))
-                Directory.CreateDirectory(FileReceivePath);
+
             using (var outputStream = new FileStream(rfilename, FileMode.Create))
             {
                 while (true)
@@ -57,12 +58,13 @@ namespace TestHarness
                         outputStream.Write(block, 0, bytesRead);
                     else
                         break;
+
                 }
             }
             //hrt.Stop();
             Console.Write(
               "\n  Received file \"{0}\" of {1} bytes.",
-              Path.GetFullPath(rfilename), totalBytes
+              Path.GetFileName(rfilename), totalBytes
             );
         }
 
@@ -98,93 +100,106 @@ namespace TestHarness
             host.AddServiceEndpoint(typeof(IStreamService), binding, baseAddress);
             return host;
         }
+
+        public string GetFileReceivePath()
+        {
+            return FileReceivePath;
+        }
     }
 
     public class StreamClient
     {
-      IStreamService fileChannel;
-      string ToSendPath = @"UploadFiles";
-      string SavePath = @"DownloadFiles";
-      int BlockSize = 1024;
-      byte[] block;
+        IStreamService fileChannel;
+        string SavePath = @"DownloadFiles";
+        int BlockSize = 1024;
+        byte[] block;
 
-      public StreamClient()
-      {
-          string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-          ToSendPath = Path.GetFullPath(Path.Combine(appLocation, ToSendPath));
-          SavePath = Path.GetFullPath(Path.Combine(appLocation, SavePath));
-          block = new byte[BlockSize];
-      }
+        public StreamClient(string url)
+        {
+            string appLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            SavePath = Path.GetFullPath(Path.Combine(appLocation, SavePath));
+            block = new byte[BlockSize];
 
-      public void CreateServiceChannel(string url)
-      {
-          BasicHttpSecurityMode securityMode = BasicHttpSecurityMode.None;
+            CreateServiceChannel(url);
+        }
 
-          BasicHttpBinding binding = new BasicHttpBinding(securityMode);
-          binding.TransferMode = TransferMode.Streamed;
-          binding.MaxReceivedMessageSize = 500000000;
-          EndpointAddress address = new EndpointAddress(url);
+        void CreateServiceChannel(string url)
+        {
+            BasicHttpSecurityMode securityMode = BasicHttpSecurityMode.None;
 
-          ChannelFactory<IStreamService> factory
-            = new ChannelFactory<IStreamService>(binding, address);
-          fileChannel = factory.CreateChannel();
-      }
+            BasicHttpBinding binding = new BasicHttpBinding(securityMode);
+            binding.TransferMode = TransferMode.Streamed;
+            binding.MaxReceivedMessageSize = 500000000;
+            EndpointAddress address = new EndpointAddress(url);
+
+            ChannelFactory<IStreamService> factory
+              = new ChannelFactory<IStreamService>(binding, address);
+            fileChannel = factory.CreateChannel();
+        }
 
 
-      public void uploadFile(string filename)
-      {
-          // Upload is from client to server
-          string fqname = Path.Combine(ToSendPath, filename);
-          try
-          {
-              //hrt.Start();
-              using (var inputStream = new FileStream(fqname, FileMode.Open))
-              {
-                  FileTransferMessage msg = new FileTransferMessage();
-                  msg.filename = filename;
-                  msg.transferStream = inputStream;
-                  fileChannel.upLoadFile(msg);
-              }
-              //hrt.Stop();
-              //Console.Write("\n  Uploaded file \"{0}\" in {1} microsec.", filename, hrt.ElapsedMicroseconds);
-          }
-          catch
-          {
-              Console.Write("\n  can't find \"{0}\"", fqname);
-          }
-      }
+        public void uploadFile(string filePath /* Absolute path */)
+        {
+            // Upload is from client to server
+            try
+            {
+                //hrt.Start();
+                using (var inputStream = new FileStream(filePath, FileMode.Open))
+                {
+                    FileTransferMessage msg = new FileTransferMessage();
+                    msg.filename = Path.GetFileName(filePath);
+                    msg.transferStream = inputStream;
+                    fileChannel.upLoadFile(msg);
+                }
+                //hrt.Stop();
+                //Console.Write("\n  Uploaded file \"{0}\" in {1} microsec.", filename, hrt.ElapsedMicroseconds);
+            }
+            catch (Exception ex)
+            {
+                Console.Write("\n  can't find \"{0}\"\nDetails: {1}", filePath, ex.Message);
+            }
+        }
 
-      public void download(string filename)
-      {
-          int totalBytes = 0;
-          try
-          {
-              //hrt.Start();
-              Stream strm = fileChannel.downLoadFile(filename);
-              string rfilename = Path.Combine(SavePath, filename);
-              if (!Directory.Exists(SavePath))
-                  Directory.CreateDirectory(SavePath);
-              using (var outputStream = new FileStream(rfilename, FileMode.Create))
-              {
-                  while (true)
-                  {
-                      int bytesRead = strm.Read(block, 0, BlockSize);
-                      totalBytes += bytesRead;
-                      if (bytesRead > 0)
-                          outputStream.Write(block, 0, bytesRead);
-                      else
-                          break;
-                  }
-              }
-              //hrt.Stop();
-              //ulong time = hrt.ElapsedMicroseconds;
-              //Console.Write("\n  Received file \"{0}\" of {1} bytes in {2} microsec.", filename, totalBytes, time);
-          }
-          catch (Exception ex)
-          {
-              Console.Write("\n  {0}", ex.Message);
-          }
-      }
+        public void download(string filename)
+        {
+            int totalBytes = 0;
+            try
+            {
+                //hrt.Start();
+                Stream strm = fileChannel.downLoadFile(filename);
+                string rfilename = Path.Combine(SavePath, filename);
+                if (!Directory.Exists(SavePath))
+                    Directory.CreateDirectory(SavePath);
+                using (var outputStream = new FileStream(rfilename, FileMode.Create))
+                {
+                    while (true)
+                    {
+                        int bytesRead = strm.Read(block, 0, BlockSize);
+                        totalBytes += bytesRead;
+                        if (bytesRead > 0)
+                            outputStream.Write(block, 0, bytesRead);
+                        else
+                            break;
+                    }
+                }
+                //hrt.Stop();
+                //ulong time = hrt.ElapsedMicroseconds;
+                //Console.Write("\n  Received file \"{0}\" of {1} bytes in {2} microsec.", filename, totalBytes, time);
+            }
+            catch (Exception ex)
+            {
+                Console.Write("\n  {0}", ex.Message);
+            }
+        }
+
+        public static void Main(string[] args)
+        {
+            StreamService ss = new StreamService();
+            ss.Start("http://localhost:8000/TestStreamService");
+
+            StreamClient sc = new StreamClient("http://localhost:8000/TestStreamService");
+            sc.uploadFile(args[0]);
+            sc.download(Path.GetFileName(args[0]));
+        }
     }
-
 }

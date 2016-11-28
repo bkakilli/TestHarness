@@ -29,22 +29,24 @@ namespace TestHarness
     public class Message
     {
         [DataMember]
-        Command cmd = Command.DoThis;
+        Command cmd = Command.TestRequestSetupError;
         [DataMember]
         string body = "default message text";
         [DataMember]
         string addr = "";
         [DataMember]
         int prt = 0;
+        [DataMember]
+        string tkn = "nan";
 
         public enum Command
         {
             [EnumMember]
-            DoThis,
+            TestRequestSetupError,
             [EnumMember]
-            DoThat,
+            ConnectFileServer,
             [EnumMember]
-            DoAnother,
+            ConnectMe,
             [EnumMember]
             TestRequest,
             [EnumMember]
@@ -52,7 +54,23 @@ namespace TestHarness
             [EnumMember]
             FileStreamSocketInfo,
             [EnumMember]
-            FileListFromRepo
+            FileListRequest,
+            [EnumMember]
+            FileListRespose,
+            [EnumMember]
+            FileListFromClient,
+            [EnumMember]
+            FileListFromClientRespose,
+            [EnumMember]
+            FileListFromClientResposeFromRepository,
+            [EnumMember]
+            LogFileListRequest,
+            [EnumMember]
+            LogFileListResponse,
+            [EnumMember]
+            LogFileRequest,
+            [EnumMember]
+            LogFileResponse
         }
 
         [DataMember]
@@ -81,6 +99,13 @@ namespace TestHarness
         {
             get { return prt; }
             set { prt = value; }
+        }
+
+        [DataMember]
+        public string token
+        {
+            get { return tkn; }
+            set { tkn = value; }
         }
 
     }

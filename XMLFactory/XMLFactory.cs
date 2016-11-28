@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Xml;
 
 namespace TestHarness
 {
@@ -44,8 +45,6 @@ namespace TestHarness
             Log(TAG, string.Format("XML is parsing..."));
             try {
                 string author = doc_.Descendants("author").First().Value;
-                string authorType = doc_.Descendants("author").First().Attribute("type").Value;
-                string priority = doc_.Descendants("priority").First().Value;
                 Test test = null;
 
                 XElement[] xtests = doc_.Descendants("test").ToArray();
@@ -61,8 +60,6 @@ namespace TestHarness
                     test = new Test();
                     test.testCode = new List<string>();
                     test.author = author;
-                    test.authorType = author;
-                    test.priority = priority;
                     test.timeStamp = DateTime.Now;
                     test.testName = xtests[i].Attribute("name").Value;
                     test.testDriver = xtests[i].Element("testDriver").Value;
@@ -81,6 +78,38 @@ namespace TestHarness
             
             return true;
         }
+
+        public static void Serialize(TestRequest tr)
+        {
+            //XmlWriterSettings settings = new XmlWriterSettings();
+            //settings.Encoding = new UTF8Encoding(false);
+            using (XmlWriter writer = XmlWriter.Create(tr.xmlPath))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("testRequest");
+                writer.WriteElementString("author", tr.author);
+
+                foreach (Test t in tr.tests)
+                {
+                    writer.WriteStartElement("test");
+                    writer.WriteAttributeString("name", t.testName);
+
+                    writer.WriteElementString("testDriver", t.testDriver);
+                    foreach(string source in t.testCode)
+                        writer.WriteElementString("library", source);
+
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+            }
+        }
+
+        //public static TestRequest Deserialize(string xmlPath)
+        //{
+
+        //}
 
         public List<Test> getTests()
         {

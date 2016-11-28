@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestHarness
 {
-    interface IRepository
+    interface IReposgitory
     {
         bool connectToRepo(string repo);
         bool findAndCopyFromRepo(string targetFile, string destDirPath, string repository, bool overwrite = true);

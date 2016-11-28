@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0F37E113-E47E-46BA-B58C-35268AB8C42F}</ProjectGuid>
+    <ProjectGuid>{10E3F476-C18A-40AB-91A9-35BE541EAB40}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Client</RootNamespace>
-    <AssemblyName>Client</AssemblyName>
+    <RootNamespace>TestCore</RootNamespace>
+    <AssemblyName>TestCore</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -35,73 +33,38 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="ClientWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ClientWindow.xaml.cs">
-      <DependentUpon>ClientWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
+    <Compile Include="TestHarness.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BlockingQueue\BlockingQueue.csproj">
+      <Project>{3fac4ea2-01d8-4f29-91ff-a0d722bbb23d}</Project>
+      <Name>BlockingQueue</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FileManager\FileManager.csproj">
       <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
       <Name>FileManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HiResTimer\HiResTimer.csproj">
+      <Project>{14c271d1-18ea-4367-a868-777091ccc99e}</Project>
+      <Name>HiResTimer</Name>
     </ProjectReference>
     <ProjectReference Include="..\IService\ICommService.csproj">
       <Project>{1355de18-03a1-4fae-8e32-58dc8940411e}</Project>
@@ -111,13 +74,17 @@
       <Project>{321b64e5-5b7d-4bae-af74-a01d2ec46af4}</Project>
       <Name>Logger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Server\ComServer.csproj">
+      <Project>{fda1841c-7b05-4fb8-b3e6-4e49362feeed}</Project>
+      <Name>ComServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Service\CommService.csproj">
       <Project>{5335d5d4-1c68-4c75-9156-7a886f1982e5}</Project>
       <Name>CommService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\StreamService\StreamService.csproj">
-      <Project>{29e7f59b-6294-41a2-babf-59392d0406fc}</Project>
-      <Name>StreamService</Name>
+    <ProjectReference Include="..\Tester\Tester.csproj">
+      <Project>{37bc6a84-d050-4c66-8be1-8cb8294de21f}</Project>
+      <Name>Tester</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestRequest\TestRequest.csproj">
       <Project>{3c0e4ad7-0851-473f-848c-af46d77a1a9e}</Project>

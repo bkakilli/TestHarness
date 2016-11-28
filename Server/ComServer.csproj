@@ -48,6 +48,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FileManager\FileManager.csproj">
+      <Project>{f233c622-049c-4c05-8802-da9c0797a058}</Project>
+      <Name>FileManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IService\ICommService.csproj">
       <Project>{1355de18-03a1-4fae-8e32-58dc8940411e}</Project>
       <Name>ICommService</Name>
@@ -63,6 +67,10 @@
     <ProjectReference Include="..\StreamService\StreamService.csproj">
       <Project>{29e7f59b-6294-41a2-babf-59392d0406fc}</Project>
       <Name>StreamService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestRequest\TestRequest.csproj">
+      <Project>{3c0e4ad7-0851-473f-848c-af46d77a1a9e}</Project>
+      <Name>TestRequest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

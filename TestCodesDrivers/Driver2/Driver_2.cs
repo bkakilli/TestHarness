@@ -15,5 +15,10 @@ namespace TestHarness
 
             return sc.runDivideByZero();
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

@@ -76,10 +76,10 @@ namespace TestHarness
             return BlockingQ.deQ();
         }
 
-        public void CreateChannel(Uri uri)
+        public void CreateChannel(string url)
         {
             WSHttpBinding binding = new WSHttpBinding();
-            Uri address = uri;
+            Uri address = new Uri(url);
             host = new ServiceHost(typeof(ReceiverService), address);
             host.AddServiceEndpoint(typeof(ICommService), binding, address);
         }
@@ -106,9 +106,9 @@ namespace TestHarness
             while (true)
             {
                 Message msg = senderQueue.deQ();
-                channel.PostMessage(msg);
                 if (msg.command == Message.Command.Shutdown && msg.text == "local")
                     break;
+                channel.PostMessage(msg);
             }
         }
         public void Start()
@@ -128,5 +128,24 @@ namespace TestHarness
 
             senderThread.Join();
         }
+
+#if (CommService_TEST)
+        public static void Main(string[] args)
+        {
+            ReceiverService rs = new ReceiverService();
+            rs.CreateChannel("http://localhost:4040/TestCommService");
+            rs.Start();
+
+            SenderService ss = new SenderService("http://localhost:4040/TestCommService");
+
+            Message msg = new Message();
+            msg.command = Message.Command.Shutdown;
+            msg.text = "local";
+            ss.PostMessage(msg);
+
+            Message msgreceived = rs.GetMessage();
+            
+        }
+#endif
     }
 }

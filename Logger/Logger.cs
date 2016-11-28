@@ -18,7 +18,7 @@ namespace TestHarness
 {
     public class Logger : ILog
     {
-        public bool verbose;
+        public bool verbose { get; set; }
 
         List<string> logList;
 

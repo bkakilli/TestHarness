@@ -21,7 +21,7 @@ namespace TestHarness
 {
     public class Tester : MarshalByRefObject, ILog
     {
-        public Logger logger;
+        Logger logger;
         //public string testRequestID;
         string TAG = "Tester";
 
@@ -103,14 +103,12 @@ namespace TestHarness
         public bool setupTest(string driverName)
         {
             string typeName = null;
-            int iTestFound = 0;
 
             // Get or find the driver dll name and the type that has ITest interface.
             Assembly[] arrayOfAssems = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assem in arrayOfAssems)
             {
                 string assemblyName = assem.FullName.Split(',')[0];
-
                 if (assemblyName == "mscorlib"
                     || assemblyName == "Microsoft.VisualStudio.HostingProcess.Utilities"
                     || assemblyName == "Tester"
@@ -128,22 +126,15 @@ namespace TestHarness
                 {
                     Type iTestType = type.GetInterface("ITest");
                     if (iTestType != null && driverName == assemblyName)
-                    {
                         typeName = type.FullName;
-                        iTestFound++;
-                    }
                 }
             }
 
-            if (iTestFound == 0)
+            if (typeName == null)
             {
                 Log(TAG, string.Format("Error: Could not find a type with ITest interface in library {0}", driverName));
                 Log(TAG, string.Format("{0}\n", getAssemblyList(AppDomain.CurrentDomain)));
                 return false;
-            }
-            else if (iTestFound > 1)
-            {
-                Log(TAG, string.Format("Warning: Multiple types with ITest interface are found in library {0}. Using the last one.", driverName));
             }
 
             try
@@ -156,7 +147,6 @@ namespace TestHarness
             {
                 Console.WriteLine(ex.Message);
             }
-
             return true;
         }
 

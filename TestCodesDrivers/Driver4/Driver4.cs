@@ -14,5 +14,10 @@ namespace SomeNewNamespace
             SourceCode_4_1.spendSomeTime();
             return true;
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

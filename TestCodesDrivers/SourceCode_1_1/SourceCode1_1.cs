@@ -20,6 +20,11 @@ namespace TestHarness
         public bool getFromSource2()
         {
             return SourceCode_1_2.someFunction();
-        }     
+        }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

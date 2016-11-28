@@ -18,11 +18,24 @@ using System.Threading.Tasks;
 namespace TestHarness
 {
 
+
     // File Manager always gets paths for the target DLLs relative to the repository folder.
     // It works in the path that application runs.
     public class FileManager<TypeTestID> : ILog
     {
-        public Logger logger;
+
+        static object lock_ = new object();
+        public static void copyFile(string sourceFilePath, string destFilePath, bool overwrite=true)
+        {
+            lock (lock_)
+            {
+                File.Copy(sourceFilePath, destFilePath, overwrite);
+            }
+        }
+
+
+
+        Logger logger;
         static string TAG = "FileManager";
 
         // Constructor
@@ -120,7 +133,7 @@ namespace TestHarness
         //    }
         //}
 
-        public static void writeToFile(string filePath, string text)
+        public static void WriteToFile(string filePath, string text)
         {
             try
             {
@@ -187,7 +200,7 @@ namespace TestHarness
 
             string testFile = Path.Combine(libDirectory, "testFile.txt");
             string sampleText = "Construction test\nfor the FileManager package.";
-            FileManager<string>.writeToFile(testFile, sampleText);
+            FileManager<string>.WriteToFile(testFile, sampleText);
 
             Console.WriteLine("Reading from file testFile.txt which has just been written:\n{0}",
                 FileManager<string>.readFile(testFile));

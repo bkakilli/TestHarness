@@ -12,5 +12,10 @@ namespace TestHarness
         {
             return false;
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

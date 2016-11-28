@@ -14,5 +14,10 @@ namespace TestHarness
             int b = 0;
             return (a / b) == 0;
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

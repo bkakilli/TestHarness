@@ -21,7 +21,12 @@ namespace TestHarness
                 Console.WriteLine("Exception caught by test code itself. Returning true. Works. Test Fine. That's enough. It's been 30 hours of coding. I need shower. But still... The details:\n{0}", ex.Message);
                 return true;
             }
-            
+
+        }
+
+        public static void Main(string[] args)
+        {
+
         }
     }
 }

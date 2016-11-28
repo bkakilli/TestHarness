@@ -14,5 +14,10 @@ namespace SomeNewNamespace
             Console.WriteLine("Waiting for 10 secs in test code.");
             Thread.Sleep(10000);
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }

@@ -13,5 +13,10 @@ namespace Driver3
         {
             return SourceCode_3_1.goodFunc();
         }
+
+        public static void Main(string[] args)
+        {
+
+        }
     }
 }
